@@ -1,23 +1,23 @@
-// Cloudflare Pages Function — handles enquiry form submissions from contact.html and careers.html
-//
-// SETUP (one-time):
-// 1. Sign up free at https://resend.com
-// 2. Go to Domains → Add Domain → add "rhinodemolition.com.au"
-//    Resend will give you DNS records — add them in your Cloudflare DNS dashboard
-// 3. Create an API key in Resend (Resend → API Keys)
-// 4. In Cloudflare Pages → your project → Settings → Environment variables:
-//    Add variable:  RESEND_API_KEY = re_xxxxxxxxxxxx  (set for both Production and Preview)
-// 5. Deploy — the form will now send emails to enquiries@rhinodemolition.com.au
-
 const RECIPIENT = 'enquiries@rhinodemolition.com.au';
-const FROM = 'Rhino Demolition <noreply@rhinodemolition.com.au>';
-const MAX_FIELD = 256;
-const MAX_MESSAGE = 5000;
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const FROM      = 'Rhino Demolition <noreply@rhinodemolition.com.au>';
+const MAX_FIELD  = 256;
+const MAX_MSG    = 5000;
+const EMAIL_RE   = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export async function onRequestPost(context) {
-  const { request, env } = context;
+export default {
+  async fetch(request, env) {
+    const url = new URL(request.url);
 
+    if (url.pathname === '/api/contact' && request.method === 'POST') {
+      return handleContact(request, env);
+    }
+
+    // Everything else — serve static HTML/CSS/images
+    return env.ASSETS.fetch(request);
+  },
+};
+
+async function handleContact(request, env) {
   let formData;
   try {
     formData = await request.formData();
@@ -27,7 +27,7 @@ export async function onRequestPost(context) {
 
   const get = (k) => (formData.get(k) ?? '').toString().trim();
 
-  // Honeypot — bots fill this in, humans leave it blank
+  // Honeypot — bots fill this, humans leave it blank
   if (get('website')) {
     return json({ success: false, error: 'Submission rejected.' }, 400);
   }
@@ -51,7 +51,7 @@ export async function onRequestPost(context) {
     firstname.length > MAX_FIELD ||
     lastname.length  > MAX_FIELD ||
     email.length     > MAX_FIELD ||
-    comment.length   > MAX_MESSAGE
+    comment.length   > MAX_MSG
   ) {
     return json({ success: false, error: 'Input exceeds maximum allowed length.' }, 400);
   }
@@ -79,7 +79,7 @@ export async function onRequestPost(context) {
 
   const apiKey = env.RESEND_API_KEY;
   if (!apiKey) {
-    console.error('RESEND_API_KEY environment variable is not set');
+    console.error('RESEND_API_KEY not set');
     return json({
       success: false,
       error: 'Email service unavailable. Please call (02) 9790 6067 or email enquiries@rhinodemolition.com.au.',
