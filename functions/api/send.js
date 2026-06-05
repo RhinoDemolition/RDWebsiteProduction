@@ -21,14 +21,6 @@ export async function onRequestPost(context) {
     return json({ success: false, error: 'Submission rejected.' }, 400);
   }
 
-  // ── Time-based check (no API key needed) ─────────────────────────────────
-  // Bots submit instantly; real users take at least a few seconds
-  const loadedAt = parseInt(get('loaded_at'), 10);
-  const now = Math.floor(Date.now() / 1000);
-  if (!loadedAt || (now - loadedAt) < 4 || (now - loadedAt) > 86400) {
-    return json({ success: false, error: 'Session expired. Please refresh the page and try again.' }, 400);
-  }
-
   // ── Cloudflare Turnstile (if configured) ─────────────────────────────────
   if (env.TURNSTILE_SECRET_KEY) {
     const token = get('cf-turnstile-response');

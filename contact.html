@@ -62,7 +62,6 @@ ABN: 85 325 696 050</p>
 
 <form id="enquiry-form" method="post" action="/api/send" novalidate>
 <input type="hidden" name="form_type" value="contact" />
-<input type="hidden" name="loaded_at" id="loaded-at" value="" />
 
 <!-- honeypot: must remain empty -->
 <div style="position:absolute;left:-9999px;top:-9999px;height:1px;overflow:hidden;" aria-hidden="true">
@@ -123,7 +122,7 @@ ABN: 85 325 696 050</p>
 <div class="formrow">
 <div class="narrowcol">&nbsp;</div>
 <div class="widecol">
-<div class="cf-turnstile" data-sitekey="REPLACE_WITH_YOUR_TURNSTILE_SITE_KEY" data-theme="dark"></div>
+<div class="cf-turnstile" data-sitekey="0x4AAAAAADfKCpGBhSrUYEET" data-size="invisible"></div>
 </div>
 <div class="clear"></div>
 </div>
@@ -166,8 +165,6 @@ E: <a href="mailto:enquiries@rhinodemolition.com.au">enquiries@rhinodemolition.c
 
 <script>
 (function () {
-  document.getElementById('loaded-at').value = Math.floor(Date.now() / 1000);
-
   var form = document.getElementById('enquiry-form');
   var btn  = document.getElementById('submit-btn');
   var msg  = document.getElementById('form-message');
@@ -206,7 +203,6 @@ E: <a href="mailto:enquiries@rhinodemolition.com.au">enquiries@rhinodemolition.c
         if (data.success) {
           showMsg(data.message, true);
           form.reset();
-          document.getElementById('loaded-at').value = Math.floor(Date.now() / 1000);
         } else {
           showMsg(data.error || 'An error occurred. Please try again.', false);
           if (typeof turnstile !== 'undefined') { turnstile.reset(); }
