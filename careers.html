@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>RHINO DEMOLITIONS</title>
 <link href="css/rhino.css" rel="stylesheet" type="text/css" media="all" />
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 
 <body id="careers-page">
@@ -51,8 +52,9 @@ We are currently seeking potential candidates to work as:
 
 <div id="form">
 
-<form id="enquiry-form" method="post" action="/api/contact" novalidate>
+<form id="enquiry-form" method="post" action="/api/send" novalidate>
 <input type="hidden" name="form_type" value="careers" />
+<input type="hidden" name="loaded_at" id="loaded-at" value="" />
 
 <!-- honeypot: must remain empty -->
 <div style="position:absolute;left:-9999px;top:-9999px;height:1px;overflow:hidden;" aria-hidden="true">
@@ -110,6 +112,14 @@ We are currently seeking potential candidates to work as:
 <div class="clear"></div>
 </div>
 
+<div class="formrow">
+<div class="narrowcol">&nbsp;</div>
+<div class="widecol">
+<div class="cf-turnstile" data-sitekey="REPLACE_WITH_YOUR_TURNSTILE_SITE_KEY" data-theme="dark"></div>
+</div>
+<div class="clear"></div>
+</div>
+
 <div>
 <div class="narrowcol">&nbsp;</div>
 <div class="widecol">
@@ -150,6 +160,8 @@ E: <a href="mailto:enquiries@rhinodemolition.com.au">enquiries@rhinodemolition.c
 
 <script>
 (function () {
+  document.getElementById('loaded-at').value = Math.floor(Date.now() / 1000);
+
   var form = document.getElementById('enquiry-form');
   var btn  = document.getElementById('submit-btn');
   var msg  = document.getElementById('form-message');
@@ -178,22 +190,25 @@ E: <a href="mailto:enquiries@rhinodemolition.com.au">enquiries@rhinodemolition.c
       return;
     }
 
-    btn.disabled  = true;
-    btn.value     = 'Sending…';
+    btn.disabled      = true;
+    btn.value         = 'Sending…';
     msg.style.display = 'none';
 
-    fetch('/api/contact', { method: 'POST', body: new FormData(form) })
+    fetch('/api/send', { method: 'POST', body: new FormData(form) })
       .then(function (r) { return r.json(); })
       .then(function (data) {
         if (data.success) {
           showMsg(data.message, true);
           form.reset();
+          document.getElementById('loaded-at').value = Math.floor(Date.now() / 1000);
         } else {
           showMsg(data.error || 'An error occurred. Please try again.', false);
+          if (typeof turnstile !== 'undefined') { turnstile.reset(); }
         }
       })
       .catch(function () {
-        showMsg('Network error. Please call (02) 9790 6067 or email enquiries@rhinodemolition.com.au.', false);
+        showMsg('Unable to send. Please call (02) 9790 6067 or email enquiries@rhinodemolition.com.au.', false);
+        if (typeof turnstile !== 'undefined') { turnstile.reset(); }
       })
       .finally(function () {
         btn.disabled = false;

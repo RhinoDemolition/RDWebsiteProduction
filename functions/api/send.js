@@ -16,11 +16,41 @@ export async function onRequestPost(context) {
 
   const get = (k) => (formData.get(k) ?? '').toString().trim();
 
-  // Honeypot — bots fill this, humans leave it blank
+  // ── Honeypot ─────────────────────────────────────────────────────────────
   if (get('website')) {
     return json({ success: false, error: 'Submission rejected.' }, 400);
   }
 
+  // ── Time-based check (no API key needed) ─────────────────────────────────
+  // Bots submit instantly; real users take at least a few seconds
+  const loadedAt = parseInt(get('loaded_at'), 10);
+  const now = Math.floor(Date.now() / 1000);
+  if (!loadedAt || (now - loadedAt) < 4 || (now - loadedAt) > 86400) {
+    return json({ success: false, error: 'Session expired. Please refresh the page and try again.' }, 400);
+  }
+
+  // ── Cloudflare Turnstile (if configured) ─────────────────────────────────
+  if (env.TURNSTILE_SECRET_KEY) {
+    const token = get('cf-turnstile-response');
+    if (!token) {
+      return json({ success: false, error: 'Please complete the security check.' }, 400);
+    }
+    const verify = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        secret: env.TURNSTILE_SECRET_KEY,
+        response: token,
+        remoteip: request.headers.get('CF-Connecting-IP') || undefined,
+      }),
+    });
+    const result = await verify.json();
+    if (!result.success) {
+      return json({ success: false, error: 'Security check failed. Please try again.' }, 400);
+    }
+  }
+
+  // ── Field validation ──────────────────────────────────────────────────────
   const firstname = get('firstname');
   const lastname  = get('lastname');
   const email     = get('email');
@@ -49,6 +79,7 @@ export async function onRequestPost(context) {
     return json({ success: false, error: 'Please enter a valid email address.' }, 400);
   }
 
+  // ── Send email ────────────────────────────────────────────────────────────
   const isCareer = formType === 'careers';
   const subject  = isCareer
     ? `Career Enquiry — ${firstname} ${lastname}`
