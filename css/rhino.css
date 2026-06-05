@@ -225,3 +225,7 @@ background-image:url(../images/contact.gif);
 }
 
 body#clients-page #maincol strong, body#careers-page #maincol strong { color:#fff; }
+
+.column1{
+display:block;
+}
