@@ -114,7 +114,7 @@ We are currently seeking potential candidates to work as:
 <div class="formrow">
 <div class="narrowcol">&nbsp;</div>
 <div class="widecol">
-<div class="cf-turnstile" data-sitekey="0x4AAAAAADfKCpGBhSrUYEET" data-size="invisible"></div>
+<div class="cf-turnstile" data-sitekey="0x4AAAAAADfKCpGBhSrUYEET" data-size="invisible" data-callback="onTurnstileSuccess" data-execution="execute"></div>
 </div>
 <div class="clear"></div>
 </div>
@@ -169,47 +169,57 @@ E: <a href="mailto:enquiries@rhinodemolition.com.au">enquiries@rhinodemolition.c
     msg.style.display = 'block';
   }
 
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-
+  function validate() {
     var firstname = form.firstname.value.trim();
     var lastname  = form.lastname.value.trim();
     var email     = form.email.value.trim();
     var comment   = form.comment.value.trim();
-
     if (!firstname || !lastname || !email || !comment) {
       showMsg('Please fill in all required fields: First name, Last name, Email, and Enquiry.', false);
-      return;
+      return false;
     }
-
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       showMsg('Please enter a valid email address.', false);
-      return;
+      return false;
     }
+    return true;
+  }
 
-    btn.disabled      = true;
-    btn.value         = 'Sending…';
-    msg.style.display = 'none';
-
+  function doSubmit() {
     fetch('/api/send', { method: 'POST', body: new FormData(form) })
       .then(function (r) { return r.json(); })
       .then(function (data) {
         if (data.success) {
+          form.style.display = 'none';
           showMsg(data.message, true);
-          form.reset();
         } else {
           showMsg(data.error || 'An error occurred. Please try again.', false);
           if (typeof turnstile !== 'undefined') { turnstile.reset(); }
+          btn.disabled = false;
+          btn.value    = 'Submit';
         }
       })
       .catch(function () {
         showMsg('Unable to send. Please call (02) 9790 6067 or email enquiries@rhinodemolition.com.au.', false);
         if (typeof turnstile !== 'undefined') { turnstile.reset(); }
-      })
-      .finally(function () {
         btn.disabled = false;
         btn.value    = 'Submit';
       });
+  }
+
+  window.onTurnstileSuccess = function () { doSubmit(); };
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!validate()) return;
+    btn.disabled      = true;
+    btn.value         = 'Sending…';
+    msg.style.display = 'none';
+    if (typeof turnstile !== 'undefined') {
+      turnstile.execute();
+    } else {
+      doSubmit();
+    }
   });
 }());
 </script>
