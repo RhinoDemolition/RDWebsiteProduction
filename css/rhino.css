@@ -1,0 +1,227 @@
+@charset "UTF-8";
+/* CSS Document */
+
+html{
+margin:			0;
+width:			100%;
+height:			100%;
+overflow:		hidden;
+}
+
+body{
+margin:0;
+padding:0;
+width:100%;
+height:100%;
+overflow:hidden;
+color:#B3B3B3;
+font-family:Arial, Helvetica, sans-serif;
+font-size:13px;
+line-height:18px;
+text-indent:0;
+background:#000000 url(../images/rhino_br.gif) no-repeat fixed right bottom;
+}
+
+div#container{
+height:100%;
+overflow-y:scroll;
+width:100%;
+}
+
+
+
+
+
+a{
+color:#CCCCCC;
+text-decoration:none;
+outline:0;
+}
+
+
+ul{
+margin:18px 0;
+}
+
+li{
+list-style-type:none;
+}
+
+li.white{
+list-style-image:url(../images/white-bulletpoint.gif);
+}
+
+
+a:hover{
+color:#FF0000;
+}
+
+
+
+div#wrapper{
+width:960px;
+}
+
+div#menu{
+padding: 140px 0 0 5px;
+width:190px;
+float:left;
+font-size:11px;
+}
+
+div#maincol{
+width:400px;
+height:100%;
+float:left;
+padding:133px 0 190px 0;
+margin-left:50px;
+}
+
+div#rightcol{
+width:210px;
+float:right;
+padding-top:87px;
+}
+
+div#clear{
+clear:both;
+}
+
+
+
+.linea{
+color:#FFFFFF;
+font-size:11px;
+}
+
+
+.lineb{
+color:#999;
+font-size:11px;
+
+}
+.lineb a, .lineb a:active { color:#999;}
+
+.linec{
+color:#555;
+letter-spacing:-0.02em;
+font-size:11px;
+
+}
+
+.lined{
+color:#333;
+font-size:11px;
+
+}
+
+h1, h2, h3, h4, h5 {
+text-indent:0;
+font-family: Helvetica, Arial, Verdana, sans-serif;
+font-weight: bold;
+letter-spacing: -.05em;
+margin: 0;
+padding: 0;
+line-height: 1em;
+}
+
+h1{
+color:#323232;
+font-size:11px;
+display:inline;
+font-weight:normal;
+}
+
+h2{
+font-size:20px;
+line-height:34px;
+letter-spacing:0px;
+display:block;
+}
+
+h3{
+font-size:20px;
+line-height:34px;
+letter-spacing:0px;
+margin:10px 0;
+display:block;
+}
+
+h4{
+font-size:20px;
+line-height:34px;
+letter-spacing:0px;
+margin:10px 0;
+display:block;
+
+}
+
+.column{
+width:180px; 
+float:left;
+}
+
+.narrowcol{
+width:100px; 
+float:left;
+}
+
+.widecol{
+width:250px; 
+float:left;
+}
+
+.formrow{
+margin-bottom:5px;
+}
+
+.clear{
+clear:both;
+}
+
+#home, #why-choose, #capabilities, #clients, #careers, #contact{
+	margin-bottom:10px;
+	display: block;
+	width: 170px;
+	height: 16px;
+	background-position:0 0;
+	background-repeat:no-repeat;
+}
+
+#home:hover, #why-choose:hover, #capabilities:hover, #clients:hover, #careers:hover, #contact:hover{
+	background-position:0 -16px;
+}
+
+#home span, #why-choose span, #capabilities span, #clients span, #careers span, #contact span{
+	display: none;
+}
+
+body#home-page #home, body#why-choose-page #why-choose, body#capabilities-page #capabilities, body#clients-page #clients, body#careers-page #careers, body#contact-page #contact{
+	background-position:0 -16px;
+}
+
+#home{
+background-image:url(../images/home.gif);
+}
+
+#why-choose{
+background-image:url(../images/why-choose.gif);
+}
+
+#capabilities{
+background-image:url(../images/capabilities.gif);
+}
+
+#clients{
+background-image:url(../images/clients.gif);
+}
+
+#careers{
+background-image:url(../images/careers.gif);
+}
+
+#contact{
+background-image:url(../images/contact.gif);
+}
+
+body#clients-page #maincol strong, body#careers-page #maincol strong { color:#fff; }
