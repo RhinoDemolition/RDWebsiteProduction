@@ -4,20 +4,9 @@ const MAX_FIELD  = 256;
 const MAX_MSG    = 5000;
 const EMAIL_RE   = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export default {
-  async fetch(request, env) {
-    const url = new URL(request.url);
+export async function onRequestPost(context) {
+  const { request, env } = context;
 
-    if (url.pathname === '/api/contact' && request.method === 'POST') {
-      return handleContact(request, env);
-    }
-
-    // Everything else — serve static HTML/CSS/images
-    return env.ASSETS.fetch(request);
-  },
-};
-
-async function handleContact(request, env) {
   let formData;
   try {
     formData = await request.formData();
